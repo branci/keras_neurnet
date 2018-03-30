@@ -9,7 +9,7 @@ from keras.preprocessing.image import ImageDataGenerator
 #network parameters
 classes_num = 10    #10 digits
 batch_size = 128
-epochs = 1
+epochs = 5
 image_dim = 28      #input image dimension (dim x dim)
 
 #load data from the mnist dataset
@@ -27,10 +27,8 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
-print(x_train.shape[0], 'train samples')
-print(x_test.shape[0], 'test samples')
-print('shape of x_train data:', x_train.shape)
-print('shape of y_train data:', y_train.shape)
+print('Number of train samples: ', x_train.shape[0])
+print('Number of test samples: ',x_test.shape[0])
 
 # setup class matrices
 y_train = keras.utils.to_categorical(y_train, classes_num)
@@ -46,16 +44,14 @@ model = Sequential([
 ])
 
 
-model.compile(loss=keras.losses.categorical_crossentropy,
-                #loss=keras.losses.logcosh,
-              optimizer=keras.optimizers.Adagrad(),
-              #optimizer=keras.optimizers.Adamax(),
+model.compile(loss=keras.losses.categorical_crossentropy,   # or logcosh ...
+              optimizer=keras.optimizers.Adagrad(),     # or Adamax() ...
               metrics=['accuracy'])
 
-print('shape of x_train data:', x_train.shape)
-print('shape of y_train data:', y_train.shape)
-print('shape of x_test data:', x_test.shape)
-print('shape of y_test data:', y_test.shape)
+print('Shape of x_train data:', x_train.shape)
+print('Shape of y_train data:', y_train.shape)
+print('Shape of x_test data:', x_test.shape)
+print('Shape of y_test data:', y_test.shape)
 
 datagen = ImageDataGenerator(
     featurewise_std_normalization=True,
@@ -64,6 +60,7 @@ datagen = ImageDataGenerator(
     height_shift_range=0.2,
     horizontal_flip=True)
 
+# data fitting with data augmentation
 datagen.fit(x_train)
 
 batches = 0
@@ -77,6 +74,7 @@ for x,y in datagen.flow(x_train, y_train, batch_size=32):
     if batches >= 5:    #stopping the infinite loop at a manually set batch size
         break
 
+# data fitting without data augmentation
 # model.fit(x_train, y_train,
 #       batch_size=batch_size,
 #       epochs=epochs,
